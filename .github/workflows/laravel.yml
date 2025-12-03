@@ -11,29 +11,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - uses: actions/checkout@v4
 
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+      - name: Make Sail executable
+        run: chmod +x vendor/bin/sail
 
-      - name: Start Sail environment
-        run: |
-          chmod +x vendor/bin/sail
-          ./vendor/bin/sail up -d --build
+      - name: Build and start Sail environment (PHP 8.4)
+        run: ./vendor/bin/sail up -d --build
 
-      - name: Wait for DB and services
-        run: |
-          echo "Waiting for PostgreSQL, Redis, Typesense..."
-          ./vendor/bin/sail artisan migrate --force
+      - name: Install Composer dependencies inside Sail
+        run: ./vendor/bin/sail composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Generate Laravel key
+      - name: Generate application key
         run: ./vendor/bin/sail artisan key:generate
+
+      - name: Run migrations
+        run: ./vendor/bin/sail artisan migrate --force
 
       - name: Run tests
         run: ./vendor/bin/sail test
