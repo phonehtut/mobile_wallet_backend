@@ -26,7 +26,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         RateLimiter::for('auth', function (Request $request) {
-            return Limit::perMinute(5)->by($request->user() ? $request->user() : $request->ip());
+            if (!app()->environment('local')) {
+                return Limit::perMinute(5)->by($request->user() ? $request->user() : $request->ip());
+            }
+            return null;
         });
 
         Scramble::configure()

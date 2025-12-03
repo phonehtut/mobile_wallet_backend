@@ -13,8 +13,7 @@ class UserRepository implements UserRepositoryInterface
     public function login(array $data, Request $request): bool
     {
         if (Auth::attempt(['phone' => $data['phone'], 'password' => $data['pin']])) {
-            $request->session()->regenerate();
-
+//            $request->session()->regenerate();
             return true;
         }
 
