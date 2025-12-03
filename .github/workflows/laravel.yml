@@ -11,25 +11,52 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+
+      - name: Set up PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
+          coverage: none
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
-      - name: Make Sail executable
-        run: chmod +x vendor/bin/sail
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
 
-      - name: Build and start Sail environment (PHP 8.4)
-        run: ./vendor/bin/sail up -d --build
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
 
-      - name: Install Composer dependencies inside Sail
-        run: ./vendor/bin/sail composer install --no-interaction --prefer-dist --optimize-autoloader
+      - name: Install Composer dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
-      - name: Generate application key
+      - name: Start Sail environment
+        run: |
+          chmod +x vendor/bin/sail
+          ./vendor/bin/sail up -d --build
+
+      - name: Wait for DB and services
+        run: |
+          echo "Waiting for PostgreSQL, Redis, Typesense..."
+          # Give services time to start
+          sleep 30
+          ./vendor/bin/sail artisan migrate --force
+
+      - name: Generate Laravel key
         run: ./vendor/bin/sail artisan key:generate
-
-      - name: Run migrations
-        run: ./vendor/bin/sail artisan migrate --force
 
       - name: Run tests
         run: ./vendor/bin/sail test
