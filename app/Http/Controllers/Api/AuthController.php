@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Repository\UserRepositoryInterface;
 use Illuminate\Http\JsonResponse;
@@ -14,6 +15,9 @@ class AuthController extends BaseController
         private UserRepositoryInterface $userRepository
     ){}
 
+    /**
+     * @unauthenticated
+     */
     public function login(LoginRequest $request): JsonResponse
     {
         try {
@@ -30,5 +34,23 @@ class AuthController extends BaseController
             return $this->serverError($exception->getMessage());
         }
 
+    }
+
+    /**
+     * @unauthenticated
+     */
+    public function register(RegisterRequest $request): JsonResponse
+    {
+        try {
+            $data = $request->validated();
+
+            $user = $this->userRepository->register($data, $request);
+
+            return $this->success('Registered successfully', [
+                'user' => UserResource::make($user)
+            ]);
+        } catch (\Exception $e) {
+            return $this->serverError($e->getMessage());
+        }
     }
 }

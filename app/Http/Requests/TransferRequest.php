@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class RegisterRequest extends FormRequest
+class TransferRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,13 +25,9 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:50',
-            'phone' => 'required|string|unique:users,phone',
-            'password' => 'required|string|min:6|max:6',
-            'nrc_number' => 'required|string',
-            'nrc_front_image' => 'required|image|mimes:jpg,jpeg,png',
-            'nrc_back_image' => 'required|image|mimes:jpg,jpeg,png',
-            'address' => 'required|string|max:50',
+            'receiver_id' => 'required|integer|exists:users,id',
+            'amount' => 'required|integer|min:1000',
+            'note' => 'nullable|string|max:255',
         ];
     }
 

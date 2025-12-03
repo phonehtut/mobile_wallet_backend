@@ -17,7 +17,7 @@ class Transaction extends Model
     ];
 
     protected $casts = [
-        'amount' => 'decimal',
+        'amount' => 'decimal:2',
     ];
 
     public function user(): BelongsTo
