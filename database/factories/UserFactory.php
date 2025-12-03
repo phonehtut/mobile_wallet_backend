@@ -29,6 +29,7 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'password' => Hash::make('123456'),
             'phone' => fake()->unique()->phoneNumber(),
+            'is_merchant' => fake()->boolean,
         ];
     }
 

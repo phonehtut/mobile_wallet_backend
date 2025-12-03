@@ -25,7 +25,7 @@ class TransferRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'receiver_id' => 'required|integer|exists:users,id',
+            'receiver_id' => 'required|integer',
             'amount' => 'required|integer|min:1000',
             'note' => 'nullable|string|max:255',
         ];

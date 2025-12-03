@@ -27,9 +27,4 @@ return Application::configure(basePath: dirname(__DIR__))
                 return (new BaseController())->methodNotAllowed();
             }
         });
-        $exceptions->renderable(function (\Throwable $e, $request) {
-            if ($request->expectsJson()) {
-                return (new BaseController())->serverError($e->getMessage());
-            }
-        });
     })->create();
