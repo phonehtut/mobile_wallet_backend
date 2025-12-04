@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('shop_logo')->nullable();
             $table->string('category');
             $table->string('address');
-            $table->string('qr_code')->nullable();
+            $table->longText('qr_code')->nullable();
             $table->timestamps();
         });
     }

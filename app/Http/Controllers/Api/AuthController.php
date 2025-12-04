@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends BaseController
 {
     public function __construct(
-        private UserRepositoryInterface $userRepository
+        private readonly UserRepositoryInterface $userRepository
     ){}
 
     /**
@@ -51,6 +51,22 @@ class AuthController extends BaseController
             ]);
         } catch (\Exception $e) {
             return $this->serverError($e->getMessage());
+        }
+    }
+
+
+    public function find(int $phone): JsonResponse
+    {
+        try {
+            $user = $this->userRepository->searchWithPhone($phone);
+
+            if (!$user){
+                return $this->notFound('User not found');
+            }
+
+            return $this->success('User found', ['user' => UserResource::make($user)]);
+        } catch (\Exception $exception) {
+            return $this->serverError($exception->getMessage());
         }
     }
 }

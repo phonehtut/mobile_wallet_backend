@@ -15,6 +15,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/user', function (Request $request) {
             return \App\Http\Resources\UserResource::make($request->user());
         });
+        Route::get('/search/phone/{phone}', [AuthController::class, 'find']);
+        Route::post('/merchant/submit', [\App\Http\Controllers\Api\MerchantController::class, 'submit']);
         Route::prefix('payment')->group(function () {
             Route::post('transfer', [PaymentController::class, 'transfer']);
         });

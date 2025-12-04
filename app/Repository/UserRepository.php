@@ -59,4 +59,18 @@ class UserRepository implements UserRepositoryInterface
 
         return $user;
     }
+
+    public function searchWithPhone($phone): User | null
+    {
+        $user = User::where('phone', $phone)->first();
+
+        return $user;
+    }
+
+    public function searchWithId($email): User | null
+    {
+        $user = User::where('email', $email)->first();
+
+        return $user;
+    }
 }

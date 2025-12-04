@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repository\MerchantRepository;
+use App\Repository\MerchantRepositoryInterface;
 use App\Repository\PaymentRepository;
 use App\Repository\PaymentRepositoryInterface;
 use App\Repository\UserRepository;
@@ -23,6 +25,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             PaymentRepositoryInterface::class,
             PaymentRepository::class
+        );
+
+        $this->app->bind(
+            MerchantRepositoryInterface::class,
+            MerchantRepository::class
         );
     }
 
