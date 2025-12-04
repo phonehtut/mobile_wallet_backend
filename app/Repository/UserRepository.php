@@ -62,14 +62,14 @@ class UserRepository implements UserRepositoryInterface
 
     public function searchWithPhone($phone): User | null
     {
-        $user = User::where('phone', $phone)->first();
+        $user = User::search($phone)->where('phone', $phone)->where('is_merchant', false)->first();
 
         return $user;
     }
 
-    public function searchWithId($email): User | null
+    public function searchWithId($id): User | null
     {
-        $user = User::where('email', $email)->first();
+        $user = User::search($id)->where('id', $id)->where('is_merchant', false)->first();
 
         return $user;
     }

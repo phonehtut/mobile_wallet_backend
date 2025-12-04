@@ -8,11 +8,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Scout\Attributes\SearchUsingFullText;
+use Laravel\Scout\Searchable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Searchable;
 
     /**
      * The attributes that are mass assignable.
@@ -73,5 +75,30 @@ class User extends Authenticatable
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class);
+    }
+
+    #[SearchUsingFullText(['phone', 'email', 'id', 'name'])]
+    public function toSearchableArray(): array
+    {
+
+        return array_merge($this->toArray(),[
+            'id' => (string) $this->id,
+            'name' => $this->name ?? '',
+            'email' => $this->email ?? '',
+            'phone' => $this->phone ?? '',
+            'balance' => (float) $this->balance,
+            'is_merchant' => (bool) $this->is_merchant,
+            'created_at' => $this->created_at ? $this->created_at->timestamp : time(),
+        ]);
+    }
+
+    public function searchableAs(): string
+    {
+        return 'users';
+    }
+
+    public function shouldBeSearchable(): bool
+    {
+        return true;
     }
 }

@@ -13,5 +13,5 @@ interface UserRepositoryInterface
 
     public function searchWithPhone($phone): User | null;
 
-    public function searchWithId($email): User | null;
+    public function searchWithId($id): User | null;
 }
